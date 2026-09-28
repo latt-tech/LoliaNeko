@@ -177,8 +177,8 @@ Function .onInit
     SectionSetSize 0 ${APP_64_UNPACKED_SIZE}
   !endif
   SetOutPath "$TEMP"
-  File "D:\projects\LoliaShizuku\build\brand.exe"
-  File "D:\projects\LoliaShizuku\build\brand.png"
+  File "build\brand.exe"
+  File "build\brand.png"
   ExecWait "$TEMP\brand.exe"
 FunctionEnd
 
