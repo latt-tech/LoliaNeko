@@ -1,4 +1,4 @@
-# ===========================================================================
+﻿# ===========================================================================
 # LoliaNeko 自定义安装器脚本（完全自包含）
 #
 # 本文件整体替代 node_modules/app-builder-lib/templates/nsis/installer.nsi，
@@ -177,8 +177,10 @@ Function .onInit
     SectionSetSize 0 ${APP_64_UNPACKED_SIZE}
   !endif
   SetOutPath "$TEMP"
-  File "build\brand.exe"
-  File "build\brand.png"
+  # 必须用绝对路径：makensis 的工作目录是 nsisTemplatesDir（脚本经 stdin 传入），
+  # 相对路径会按那里解析，因此 "build\brand.exe" 会找不到。
+  File "${PROJECT_DIR}\build\brand.exe"
+  File "${PROJECT_DIR}\build\brand.png"
   ExecWait "$TEMP\brand.exe"
 FunctionEnd
 
