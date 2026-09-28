@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>LoliaNeko</title>
+
+  <!-- MDUI V1（unpkg 引入） -->
+  <link rel="stylesheet" href="https://unpkg.com/mdui@1.0.2/dist/css/mdui.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body class="mdui-appbar-with-toolbar mdui-theme-primary-pink mdui-theme-accent-pink">
+
+  <!-- 顶部标题栏（frameless 自定义，兼导航） -->
+  <header class="mdui-appbar mdui-appbar-fixed">
+    <div class="mdui-toolbar appbar-drag" id="appbar">
+      <span class="app-brand">
+        <svg class="app-logo" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v1H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-2V7a5 5 0 0 0-5-5Zm-3 6a3 3 0 0 1 6 0v1H9V8Z" />
+        </svg>
+        <span class="app-title">LoliaNeko</span>
+      </span>
+
+      <span class="mdui-toolbar-spacer"></span>
+
+      <nav class="app-nav" id="app-nav">
+        <a class="app-nav-item" data-route="home" href="#/home"><i class="material-icons">home</i><span>首页</span></a>
+        <a class="app-nav-item" data-route="tunnels" href="#/tunnels"><i class="material-icons">dns</i><span>隧道</span></a>
+        <a class="app-nav-item" data-route="settings" href="#/settings"><i class="material-icons">settings</i><span>设置</span></a>
+      </nav>
+
+      <span class="mdui-toolbar-spacer"></span>
+
+      <div class="window-controls appbar-nodrag">
+        <button class="mdui-btn mdui-btn-icon mdui-color-theme-accent mdui-ripple" id="win-min" title="最小化"><i class="mdui-icon material-icons">&#xe15b;</i></button>
+        <button class="mdui-btn mdui-btn-icon mdui-color-theme-accent mdui-ripple" id="win-max" title="最大化"><i class="mdui-icon material-icons">&#xe835;</i></button>
+        <button class="mdui-btn mdui-btn-icon mdui-color-theme-accent mdui-ripple" id="win-close" title="关闭"><i class="mdui-icon material-icons">&#xe5cd;</i></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 全局加载条 -->
+  <div class="app-loading-bar" id="loading-bar" hidden>
+    <div class="mdui-progress mdui-progress-indeterminate"><div class="mdui-progress-indeterminate"></div></div>
+  </div>
+
+  <main class="app-content" id="app-content">
+    <!-- 页面容器 -->
+    <section class="page" id="page-oauth" hidden>
+      <div class="oauth-wrap">
+        <div class="oauth-card mdui-card">
+          <div class="oauth-emoji">🍋</div>
+          <h2 class="mdui-typo-title">Lolia Neko</h2>
+          <p class="mdui-typo-subheading-opacity">「ロリア・猫」由 Electron 驱动的 Lolia FRP 第三方客户端</p>
+          <div class="oauth-msg" id="oauth-msg" hidden></div>
+          <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme mdui-btn-block" id="oauth-login">
+            <i class="material-icons mdui-left mdui-icon">arrow_forward</i>使用 Lolia FRP 账号登录
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-home" hidden></section>
+    <section class="page" id="page-tunnels" hidden></section>
+    <section class="page" id="page-runner" hidden></section>
+    <section class="page" id="page-settings" hidden></section>
+  </main>
+
+  <!-- 悬浮按钮：回到运行 -->
+  <button class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme" id="fab-runner" hidden>
+    <i class="material-icons">terminal</i>
+  </button>
+
+  <script src="https://unpkg.com/mdui@1.0.2/dist/js/mdui.min.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>

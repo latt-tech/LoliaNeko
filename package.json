@@ -1,0 +1,52 @@
+{
+  "name": "lolianeko",
+  "productName": "LoliaNeko",
+  "version": "1.0.0",
+  "description": "「ロリア・猫」由 Electron 驱动的 Lolia FRP 第三方客户端",
+  "author": "Whirity404",
+  "license": "MIT",
+  "main": "src/main/index.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "set ELECTRON_BUILDER_COMPRESSION_LEVEL=1&& electron-builder"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.10",
+    "tar": "^6.2.0"
+  },
+  "devDependencies": {
+    "electron": "28.3.3",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "link.lolia.neko",
+    "productName": "LoliaNeko",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "renderer/**/*",
+      "build/appicon.png",
+      "LICENSES.chromium.html",
+      "!src/**/*.map"
+    ],
+    "win": {
+      "icon": "build/windows/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "installerIcon": "LoliaNekoSetup.ico",
+      "uninstallerIcon": "LoliaNekoSetup.ico"
+    }
+  }
+}
