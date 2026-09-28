@@ -85,3 +85,5 @@ frpc 安装在 Electron `userData`（Windows 下为 `%APPDATA%\LoliaNeko`）的 
 [LoliaFRP-CLI](https://github.com/Lolia-FRP/lolia-frp)
 
 [FRP](https://github.com/fatedier/frp)
+
+[LoliaShizuku](https://github.com/Mxmilu666/LoliaShizuku)
