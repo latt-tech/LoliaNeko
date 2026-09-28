@@ -1207,7 +1207,7 @@ async function mountSettings() {
       <div class="soft-card">
         <h4>相关链接</h4>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="mdui-btn mdui-ripple mdui-color-theme" data-link="https://github.com/Whirity404/LoliaNeko"><i class="material-icons mdui-left mdui-icon">link</i>项目仓库</button>
+          <button class="mdui-btn mdui-ripple mdui-color-theme" data-link="https://github.com/latt-tech/LoliaNeko"><i class="material-icons mdui-left mdui-icon">link</i>项目仓库</button>
           <button class="mdui-btn mdui-ripple" data-link="https://dash.lolia.link"><i class="material-icons mdui-left mdui-icon">dashboard</i>Lolia 控制台</button>
           <button class="mdui-btn mdui-ripple" data-link="https://lolia.link"><i class="material-icons mdui-left mdui-icon">language</i>Lolia 官网</button>
           <button class="mdui-btn mdui-ripple" data-license><i class="material-icons mdui-left mdui-icon">description</i>开源许可</button>
