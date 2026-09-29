@@ -8,7 +8,7 @@
   "main": "src/main/index.js",
   "scripts": {
     "start": "electron .",
-    "dist": "set ELECTRON_BUILDER_COMPRESSION_LEVEL=1&& electron-builder"
+    "dist": "set ELECTRON_BUILDER_COMPRESSION_LEVEL=1&& electron-builder --publish never"
   },
   "dependencies": {
     "adm-zip": "^0.5.10",

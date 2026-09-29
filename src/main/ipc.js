@@ -20,6 +20,11 @@ function registerIpc({ ipcMain, app, configManager, tokenService, centerService,
   ipcMain.handle('app:getConfigPath', wrap(() => configManager.getConfigPath()));
   ipcMain.handle('app:resetConfig', wrap(() => configManager.resetToDefaults()));
   ipcMain.handle('app:getVersionInfo', wrap(() => versionInfo.getInfo()));
+  ipcMain.handle('app:getAutoLaunch', wrap(() => app.getLoginItemSettings().openAtLogin));
+  ipcMain.handle('app:setAutoLaunch', wrap((enabled) => {
+    app.setLoginItemSettings({ openAtLogin: !!enabled });
+    return app.getLoginItemSettings().openAtLogin;
+  }));
 
   // ---- Token / OAuth ----
   ipcMain.handle('token:hasOAuthToken', wrap(() => tokenService.hasOAuthToken()));

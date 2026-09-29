@@ -18,6 +18,8 @@ contextBridge.exposeInMainWorld('neko', {
     getConfigPath: () => invoke('app:getConfigPath'),
     resetConfig: () => invoke('app:resetConfig'),
     getVersionInfo: () => invoke('app:getVersionInfo'),
+    getAutoLaunch: () => invoke('app:getAutoLaunch'),
+    setAutoLaunch: (enabled) => invoke('app:setAutoLaunch', enabled),
     getCloseAction: () => invoke('app:getCloseAction'),
     setCloseAction: (action) => invoke('app:setCloseAction', action),
     quit: () => invoke('app:quit'),

@@ -1092,12 +1092,27 @@ async function mountSettings() {
 
   async function renderGeneralPanel() {
     let closeAction = 'tray';
+    let autoLaunch = false;
     try {
       closeAction = await api.app.getCloseAction();
     } catch {
       // 读取失败时沿用默认值展示
     }
+    try {
+      autoLaunch = await api.app.getAutoLaunch();
+    } catch {
+      // 读取失败时按未开启展示
+    }
     panelBodyEl.innerHTML = `
+      <div class="soft-card">
+        <h4>开机启动</h4>
+        <label class="mdui-switch">
+          <input type="checkbox" id="auto-launch" ${autoLaunch ? 'checked' : ''}/>
+          <i class="mdui-switch-icon"></i>
+          <span>开机时自动启动</span>
+        </label>
+        <div class="hint-text">开启后，登录系统时会自动启动本程序。</div>
+      </div>
       <div class="soft-card">
         <h4>关闭按钮行为</h4>
         <select class="mdui-select" id="close-action" style="width:100%">
@@ -1106,6 +1121,16 @@ async function mountSettings() {
         </select>
         <div class="hint-text">选择「最小化到托盘」时，点关闭按钮会隐藏窗口，frpc 继续在后台运行；可点击托盘图标重新打开，或在托盘菜单里退出。</div>
       </div>`;
+
+    document.getElementById('auto-launch').addEventListener('change', async (event) => {
+      try {
+        await api.app.setAutoLaunch(event.target.checked);
+        showMessage(event.target.checked ? '已开启开机启动' : '已关闭开机启动', 'success');
+      } catch (error) {
+        showMessage(error.message || '保存失败', 'error');
+        renderGeneralPanel();
+      }
+    });
 
     document.getElementById('close-action').addEventListener('change', async (event) => {
       const value = event.target.value;
