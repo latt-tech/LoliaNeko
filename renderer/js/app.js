@@ -1093,6 +1093,9 @@ async function mountSettings() {
   async function renderGeneralPanel() {
     let closeAction = 'tray';
     let autoLaunch = false;
+    let autoStartBehavior = 'show';
+    let autoStartTunnels = [];
+    let tunnels = [];
     try {
       closeAction = await api.app.getCloseAction();
     } catch {
@@ -1103,6 +1106,24 @@ async function mountSettings() {
     } catch {
       // 读取失败时按未开启展示
     }
+    try {
+      autoStartBehavior = await api.app.getAutoStartBehavior();
+    } catch {
+      // 读取失败时沿用默认值展示
+    }
+    try {
+      autoStartTunnels = await api.app.getAutoStartTunnels();
+    } catch {
+      // 读取失败时按空列表展示
+    }
+    try {
+      const overview = await api.center.getTunnelsOverview(1, 100, 0);
+      tunnels = overview?.list || [];
+    } catch {
+      // 隧道列表拉取失败时展示空列表
+    }
+    const selectedSet = new Set(autoStartTunnels);
+
     panelBodyEl.innerHTML = `
       <div class="soft-card">
         <h4>开机启动</h4>
@@ -1112,6 +1133,39 @@ async function mountSettings() {
           <span>开机时自动启动</span>
         </label>
         <div class="hint-text">开启后，登录系统时会自动启动本程序。</div>
+      </div>
+      <div class="soft-card">
+        <h4>开机启动行为</h4>
+        <select class="mdui-select" id="auto-start-behavior" style="width:100%">
+          <option value="show" ${autoStartBehavior === 'show' ? 'selected' : ''}>显示主界面</option>
+          <option value="minimize" ${autoStartBehavior === 'minimize' ? 'selected' : ''}>最小化（后台运行）</option>
+        </select>
+        <div class="hint-text">开机自启时主界面的显示方式。「最小化」会隐藏窗口，可点击托盘图标重新打开。</div>
+      </div>
+      <div class="soft-card">
+        <h4>开机自动启动的隧道</h4>
+        ${
+          tunnels.length === 0
+            ? '<div class="hint-text">当前账号暂无隧道。</div>'
+            : `<div class="mdui-list" style="padding:0">
+          ${tunnels
+            .map(
+              (tunnel) => `
+            <label class="mdui-list-item mdui-ripple" style="cursor:pointer">
+              <div class="mdui-checkbox">
+                <input type="checkbox" class="auto-start-tunnel" value="${escapeHtml(tunnel.name)}" ${selectedSet.has(tunnel.name) ? 'checked' : ''}/>
+                <i class="mdui-checkbox-icon"></i>
+              </div>
+              <div class="mdui-list-item-content" style="margin-left:8px">
+                <div class="mdui-list-item-title">${escapeHtml(tunnel.remark || tunnel.name)}</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">${escapeHtml(tunnel.node_name || '-')}</div>
+              </div>
+            </label>`,
+            )
+            .join('')}
+        </div>
+        <div class="hint-text">开机自启时会自动启动勾选的隧道（frpc 随开机运行）。</div>`
+        }
       </div>
       <div class="soft-card">
         <h4>关闭按钮行为</h4>
@@ -1130,6 +1184,30 @@ async function mountSettings() {
         showMessage(error.message || '保存失败', 'error');
         renderGeneralPanel();
       }
+    });
+
+    document.getElementById('auto-start-behavior').addEventListener('change', async (event) => {
+      const value = event.target.value;
+      try {
+        await api.app.setAutoStartBehavior(value);
+        showMessage('已更新开机启动行为', 'success');
+      } catch (error) {
+        showMessage(error.message || '保存失败', 'error');
+      }
+      renderGeneralPanel();
+    });
+
+    panelBodyEl.querySelectorAll('.auto-start-tunnel').forEach((checkbox) => {
+      checkbox.addEventListener('change', async () => {
+        const names = Array.from(panelBodyEl.querySelectorAll('.auto-start-tunnel:checked')).map((el) => el.value);
+        try {
+          await api.app.setAutoStartTunnels(names);
+          showMessage('已更新开机自启隧道', 'success');
+        } catch (error) {
+          showMessage(error.message || '保存失败', 'error');
+          renderGeneralPanel();
+        }
+      });
     });
 
     document.getElementById('close-action').addEventListener('change', async (event) => {

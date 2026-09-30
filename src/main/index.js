@@ -18,6 +18,8 @@ let tray = null;
 let trayBalloonShown = false;
 // 由 before-quit 置位：区分「用户关闭窗口」与「真正退出」
 let isQuitting = false;
+// 是否由开机自启拉起（注册表启动项带 --autostart 参数）
+const isAutoStart = process.argv.includes('--autostart');
 
 const APP_ICON_PATH = path.join(__dirname, '..', '..', 'build', 'appicon.png');
 
@@ -109,6 +111,12 @@ function createWindow() {
   }
 
   mainWindow.once('ready-to-show', () => {
+    // 开机自启且配置为「最小化」时不显示窗口（隐藏到托盘/后台）；
+    // 但关闭行为为「直接退出」时没有托盘图标可唤回窗口，回退为显示
+    if (isAutoStart && configManager.getAutoStartBehavior() === 'minimize' && configManager.getCloseAction() === 'tray') {
+      mainWindow.hide();
+      return;
+    }
     mainWindow.show();
   });
 
@@ -230,6 +238,41 @@ function openLicenseWindow() {
 
 registerIpc({ ipcMain, app, configManager, tokenService, centerService, frpcService, getMainWindow });
 
+// 开机自启时自动启动用户选择的隧道（失败静默，不打扰用户）
+async function autoStartTunnels() {
+  if (!isAutoStart) {
+    return;
+  }
+  const names = configManager.getAutoStartTunnels();
+  if (names.length === 0) {
+    return;
+  }
+  // 开机后网络可能尚未就绪，失败时延迟重试
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if (attempt > 0) {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+    try {
+      await centerService.startRunner(names);
+      return;
+    } catch {
+      // 整体失败（如个别隧道已失效）时逐个尝试，跳过失败的
+      let started = false;
+      for (const name of names) {
+        try {
+          await centerService.startRunner([name]);
+          started = true;
+        } catch {
+          // 跳过该隧道
+        }
+      }
+      if (started) {
+        return;
+      }
+    }
+  }
+}
+
 // 窗口控制（返回值需与 ipc.js 的 wrap() 协议一致：{ ok, data }）
 ipcMain.on('window:minimize', () => {
   if (mainWindow) mainWindow.minimize();
@@ -286,6 +329,7 @@ if (!gotLock) {
     configManager.initialize();
     createWindow();
     syncTray();
+    autoStartTunnels();
 
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) {

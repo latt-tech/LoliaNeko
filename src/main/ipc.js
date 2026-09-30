@@ -22,9 +22,14 @@ function registerIpc({ ipcMain, app, configManager, tokenService, centerService,
   ipcMain.handle('app:getVersionInfo', wrap(() => versionInfo.getInfo()));
   ipcMain.handle('app:getAutoLaunch', wrap(() => app.getLoginItemSettings().openAtLogin));
   ipcMain.handle('app:setAutoLaunch', wrap((enabled) => {
-    app.setLoginItemSettings({ openAtLogin: !!enabled });
+    // 追加 --autostart 参数，主进程据此识别「开机自启」场景
+    app.setLoginItemSettings({ openAtLogin: !!enabled, args: ['--autostart'] });
     return app.getLoginItemSettings().openAtLogin;
   }));
+  ipcMain.handle('app:getAutoStartBehavior', wrap(() => configManager.getAutoStartBehavior()));
+  ipcMain.handle('app:setAutoStartBehavior', wrap((behavior) => configManager.setAutoStartBehavior(behavior)));
+  ipcMain.handle('app:getAutoStartTunnels', wrap(() => configManager.getAutoStartTunnels()));
+  ipcMain.handle('app:setAutoStartTunnels', wrap((names) => configManager.setAutoStartTunnels(names)));
 
   // ---- Token / OAuth ----
   ipcMain.handle('token:hasOAuthToken', wrap(() => tokenService.hasOAuthToken()));

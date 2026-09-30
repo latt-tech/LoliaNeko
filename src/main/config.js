@@ -11,6 +11,10 @@ function getDefaultConfig() {
       autoStart: false,
       // 'tray' = 点关闭按钮最小化到托盘；'quit' = 直接退出
       closeAction: 'tray',
+      // 开机自启时的窗口行为：'show' = 显示主界面；'minimize' = 最小化（隐藏窗口）
+      autoStartBehavior: 'show',
+      // 开机自启时需要自动启动的隧道名列表
+      autoStartTunnels: [],
     },
     theme: {
       mode: 'light',
@@ -128,6 +132,49 @@ class ConfigManager {
       this.config.app.closeAction = value;
       this.save();
     }
+    return value;
+  }
+
+  // 旧配置文件的 app 段可能没有以下字段（load() 是浅合并），这里做兜底
+  getAutoStartBehavior() {
+    return this.config?.app?.autoStartBehavior === 'minimize' ? 'minimize' : 'show';
+  }
+
+  setAutoStartBehavior(behavior) {
+    const value = behavior === 'minimize' ? 'minimize' : 'show';
+    if (!this.config.app) {
+      this.config.app = {};
+    }
+    if (this.config.app.autoStartBehavior !== value) {
+      this.config.app.autoStartBehavior = value;
+      this.save();
+    }
+    return value;
+  }
+
+  getAutoStartTunnels() {
+    const list = this.config?.app?.autoStartTunnels;
+    if (!Array.isArray(list)) {
+      return [];
+    }
+    return list.map((name) => String(name || '').trim()).filter(Boolean);
+  }
+
+  setAutoStartTunnels(names) {
+    const seen = new Set();
+    const value = [];
+    for (const name of Array.isArray(names) ? names : []) {
+      const trimmed = String(name || '').trim();
+      if (trimmed && !seen.has(trimmed)) {
+        seen.add(trimmed);
+        value.push(trimmed);
+      }
+    }
+    if (!this.config.app) {
+      this.config.app = {};
+    }
+    this.config.app.autoStartTunnels = value;
+    this.save();
     return value;
   }
 }
